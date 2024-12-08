@@ -1,22 +1,23 @@
 package team4384.robot.constants;
 
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CANcoderConfigurator;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 public final class CTREConfigs {
-    public TalonFXConfiguration swerveAngleFXConfig;
+    public com.ctre.phoenix6.configs.TalonFXConfiguration swerveAngleFXConfig;
     public com.ctre.phoenix6.configs.TalonFXConfiguration swerveDriveFXConfig;
-    public CANCoderConfiguration swerveCanCoderConfig;
+    public com.ctre.phoenix6.configs.CANcoderConfigurator swerveCanCoderConfig;
 
     public CTREConfigs(){
         swerveAngleFXConfig = new TalonFXConfiguration();
         swerveDriveFXConfig = new com.ctre.phoenix6.configs.TalonFXConfiguration();
-        swerveCanCoderConfig = new CANCoderConfiguration();
+        swerveCanCoderConfig = new CANcoderConfigurator();
 
         /* Swerve Angle Motor Configurations */
         SupplyCurrentLimitConfiguration angleSupplyLimit = new SupplyCurrentLimitConfiguration(
@@ -25,10 +26,10 @@ public final class CTREConfigs {
             SwerveMap.anglePeakCurrentLimit, 
             SwerveMap.anglePeakCurrentDuration);
 
-        swerveAngleFXConfig.slot0.kP = SwerveMap.angleKP;
-        swerveAngleFXConfig.slot0.kI = SwerveMap.angleKI;
-        swerveAngleFXConfig.slot0.kD = SwerveMap.angleKD;
-        swerveAngleFXConfig.slot0.kF = SwerveMap.angleKF;
+        swerveAngleFXConfig.Slot0.kP = SwerveMap.angleKP;
+        swerveAngleFXConfig.Slot0.kI = SwerveMap.angleKI;
+        swerveAngleFXConfig.Slot0.kD = SwerveMap.angleKD;
+        swerveAngleFXConfig.Slot0.kF = SwerveMap.angleKF;
         swerveAngleFXConfig.supplyCurrLimit = angleSupplyLimit;
 
         /* Swerve Drive Motor Configuration */

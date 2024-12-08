@@ -2,6 +2,9 @@ package team4384.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,7 +17,6 @@ import team4384.lib.util.SwerveModuleConstants;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import team4384.robot.constants.SwerveMap;
 
@@ -26,9 +28,9 @@ public class SwerveModule {
     private Rotation2d angleOffset;
     private Rotation2d lastAngle;
 
-    private TalonFX mAngleMotor;
+    private com.ctre.phoenix6.hardware.TalonFX mAngleMotor;
     private com.ctre.phoenix6.hardware.TalonFX mDriveMotor;
-    private CANCoder angleEncoder;
+    private com.ctre.phoenix6.hardware.CANcoder angleEncoder;
 
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(driveKS, driveKV, driveKA);
 
@@ -38,7 +40,7 @@ public class SwerveModule {
         this.angleOffset = moduleConstants.angleOffset;
         
         /* Angle Encoder Config */
-        angleEncoder = new CANCoder(moduleConstants.cancoderID);
+        angleEncoder = new CANcoder(moduleConstants.cancoderID);
         configAngleEncoder();
 
         /* Angle Motor Config */
@@ -70,35 +72,44 @@ public class SwerveModule {
 
     private void setAngle(SwerveModuleState desiredState){
         Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveMap.maxSpeed * 0.01)) ? lastAngle : desiredState.angle; //Prevent rotating module if speed is less then 1%. Prevents Jittering.
-        
-        mAngleMotor.set(ControlMode.Position, Conversions.degreesToFalcon(angle.getDegrees(), SwerveMap.angleGearRatio));
+
+        PositionDutyCycle posControl = new PositionDutyCycle(0.0);
+        mAngleMotor.setControl(posControl.withPosition(Conversions.degreesToFalcon(angle.getDegrees(), angleGearRatio)));
         lastAngle = angle;
     }
 
     private Rotation2d getAngle(){
-        return Rotation2d.fromDegrees(Conversions.falconToDegrees(mAngleMotor.getSelectedSensorPosition(), SwerveMap.angleGearRatio));
+        return Rotation2d.fromDegrees(Conversions.falconToDegrees(mAngleMotor.getPosition().getValue(), SwerveMap.angleGearRatio));
     }
 
     public Rotation2d getCanCoder(){
-        return Rotation2d.fromDegrees(angleEncoder.getAbsolutePosition());
+        return Rotation2d.fromDegrees(angleEncoder.getPosition().getValue());
     }
 
     public void resetToAbsolute(){
         double absolutePosition = Conversions.degreesToFalcon(getCanCoder().getDegrees() - angleOffset.getDegrees(), SwerveMap.angleGearRatio);
-        mAngleMotor.setSelectedSensorPosition(absolutePosition);
+        PositionDutyCycle posControl = new PositionDutyCycle(0.0);
+        mAngleMotor.setControl(posControl.withPosition(absolutePosition));
     }
 
-    private void configAngleEncoder(){        
+    private void configAngleEncoder(){
+        angleEncoder.getConfigurator().apply(Robot.ctreConfigs.swerveCanCoderConfig);
         angleEncoder.configFactoryDefault();
         angleEncoder.configAllSettings(Robot.ctreConfigs.swerveCanCoderConfig);
     }
 
     private void configAngleMotor(){
-        mAngleMotor.configFactoryDefault();
-        mAngleMotor.configAllSettings(Robot.ctreConfigs.swerveAngleFXConfig);
-        mAngleMotor.setInverted(SwerveMap.angleMotorInvert);
-        mAngleMotor.setNeutralMode(SwerveMap.angleNeutralMode);
-        resetToAbsolute();
+//        mAngleMotor.configFactoryDefault();
+//        mAngleMotor.configAllSettings(Robot.ctreConfigs.swerveAngleFXConfig);
+//        mAngleMotor.setInverted(SwerveMap.angleMotorInvert);
+//        mAngleMotor.setNeutralMode(SwerveMap.angleNeutralMode);
+//        resetToAbsolute();
+        TalonFXConfiguration configs = new TalonFXConfiguration();
+        mAngleMotor.getConfigurator().apply(configs);
+        mAngleMotor.getConfigurator().apply(Robot.ctreConfigs.swerveDriveFXConfig);
+        mAngleMotor.setInverted(SwerveMap.driveMotorInvert);
+        mAngleMotor.setNeutralMode(NeutralModeValue.Coast);
+        mAngleMotor.setPosition(0);
     }
 
     private void configDriveMotor(){

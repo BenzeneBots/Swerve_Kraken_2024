@@ -1,13 +1,7 @@
 package team4384.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj.*;
 
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -62,32 +56,6 @@ public class RobotContainer {
             )
         );
 
-       AutoBuilder.configureHolonomic(
-            s_Swerve::getPose,
-            s_Swerve::resetOdometry,
-            s_Swerve::getModuleStates,
-            s_Swerve::autoDrive,
-            new HolonomicPathFollowerConfig(
-                    new PIDConstants(1.0, 0, 0),
-                    new PIDConstants(1.0, 0, 0),
-                    5.0,
-                    0.38,
-                    new ReplanningConfig()
-            ),
-            () -> {
-                var alliance = DriverStation.getAlliance();
-                return alliance.filter(value -> value == DriverStation.Alliance.Red).isPresent();
-            },
-            s_Swerve);
-
-//        Command auto1 = AutoBuilder.buildAuto("Auto 1");
-//        Command auto2 = AutoBuilder.buildAuto("Auto 2");
-//        Command auto3 = AutoBuilder.buildAuto("Auto 3");
-//
-//        autoChooser.setDefaultOption("Auto 1", auto1);
-//        autoChooser.addOption("Auto 2", auto2);
-//        autoChooser.addOption("Auto 3", auto3);
-//        SmartDashboard.putData("Auto Choices", autoChooser);
     }
 
     /**
