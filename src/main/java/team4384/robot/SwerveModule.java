@@ -32,7 +32,7 @@ public class SwerveModule {
     private com.ctre.phoenix6.hardware.TalonFX mDriveMotor;
     private com.ctre.phoenix6.hardware.CANcoder angleEncoder;
 
-    SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(driveKS, driveKV, driveKA);
+//    SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(driveKS, driveKV, driveKA);
 
     public SwerveModule(int moduleNumber, String moduleName, SwerveModuleConstants moduleConstants){
         this.moduleNumber = moduleNumber;
@@ -74,7 +74,7 @@ public class SwerveModule {
         Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveMap.maxSpeed * 0.01)) ? lastAngle : desiredState.angle; //Prevent rotating module if speed is less then 1%. Prevents Jittering.
 
         PositionDutyCycle posControl = new PositionDutyCycle(0.0);
-        mAngleMotor.setControl(posControl.withPosition(Conversions.degreesToFalcon(angle.getDegrees(), angleGearRatio)));
+        mAngleMotor.setControl(posControl.withPosition(Conversions.degreesToFalcon(angle.getDegrees(), angleGearRatio)/2048.0));
         lastAngle = angle;
     }
 
@@ -93,9 +93,9 @@ public class SwerveModule {
     }
 
     private void configAngleEncoder(){
-        angleEncoder.getConfigurator().apply(Robot.ctreConfigs.swerveCanCoderConfig);
-        angleEncoder.configFactoryDefault();
-        angleEncoder.configAllSettings(Robot.ctreConfigs.swerveCanCoderConfig);
+//        angleEncoder.getConfigurator().;
+//        angleEncoder.configFactoryDefault();
+//        angleEncoder.configAllSettings(Robot.ctreConfigs.swerveCanCoderConfig);
     }
 
     private void configAngleMotor(){
@@ -107,8 +107,8 @@ public class SwerveModule {
         TalonFXConfiguration configs = new TalonFXConfiguration();
         mAngleMotor.getConfigurator().apply(configs);
         mAngleMotor.getConfigurator().apply(Robot.ctreConfigs.swerveDriveFXConfig);
-        mAngleMotor.setInverted(SwerveMap.driveMotorInvert);
-        mAngleMotor.setNeutralMode(NeutralModeValue.Coast);
+        mAngleMotor.setInverted(angleMotorInvert);
+        mAngleMotor.setNeutralMode(NeutralModeValue.Brake);
         mAngleMotor.setPosition(0);
     }
 

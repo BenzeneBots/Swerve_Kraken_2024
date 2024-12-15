@@ -27,6 +27,11 @@ public class RobotContainer {
 
     public final Joystick manip = new Joystick(1);
 
+    private final JoystickButton stow = new JoystickButton(manip, 1);
+    private final JoystickButton extend = new JoystickButton(manip, 2);
+
+    private final JoystickButton middle = new JoystickButton(manip, 3);
+
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     final JoystickButton SlowMode  = new JoystickButton(driver, 1);
     final JoystickButton zeroOdo = new JoystickButton(driver, 3);
@@ -38,6 +43,7 @@ public class RobotContainer {
 
     SendableChooser<Command> autoChooser = new SendableChooser<Command>();
     public final Swerve s_Swerve = new Swerve();
+    public final Pivot s_Pivot = new Pivot();
 //    private final StateManager sManager = new StateManager();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -46,7 +52,7 @@ public class RobotContainer {
 
        s_Swerve.setDefaultCommand(
             new TeleopSwerve(
-                s_Swerve, 
+                s_Swerve,
                 () -> -driver.getRawAxis(translationAxis),
                 () -> -driver.getRawAxis(strafeAxis),
                 () -> driver.getRawAxis(rotationAxis),
@@ -67,6 +73,10 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(s_Swerve::zeroGyro));
+
+        stow.onTrue(new InstantCommand(s_Pivot::stow));
+        extend.onTrue(new InstantCommand(s_Pivot::extend));
+        middle.onTrue(new InstantCommand(s_Pivot::middle));
     }
 
     /**

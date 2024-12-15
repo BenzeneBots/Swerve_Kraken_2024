@@ -41,13 +41,13 @@ public class SwerveMap {
     public static final boolean canCoderInvert = chosenModule.canCoderInvert;
 
     /* Swerve Current Limiting */
-    public static final int angleContinuousCurrentLimit = 25;
-    public static final int anglePeakCurrentLimit = 40;
+    public static final int angleContinuousCurrentLimit = 10;
+    public static final int anglePeakCurrentLimit = 1;
     public static final double anglePeakCurrentDuration = 0.1;
     public static final boolean angleEnableCurrentLimit = true;
 
-    public static final int driveContinuousCurrentLimit = 35;
-    public static final int drivePeakCurrentLimit = 60;
+    public static final int driveContinuousCurrentLimit = 10;
+    public static final int drivePeakCurrentLimit = 1;
     public static final double drivePeakCurrentDuration = 0.1;
     public static final boolean driveEnableCurrentLimit = true;
 
@@ -60,13 +60,11 @@ public class SwerveMap {
     public static final double angleKP = chosenModule.angleKP;
     public static final double angleKI = chosenModule.angleKI;
     public static final double angleKD = chosenModule.angleKD;
-    public static final double angleKF = chosenModule.angleKF;
 
     /* Drive Motor PID Values */
     public static final double driveKP = 0.05; //TODO: This must be tuned to specific robot
     public static final double driveKI = 0.0;
     public static final double driveKD = 0.0;
-    public static final double driveKF = 0.0;
 
     /* Drive Motor Characterization Values
      * Divide SYSID values by 12 to convert from volts to percent output for CTRE */

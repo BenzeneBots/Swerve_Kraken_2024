@@ -4,6 +4,8 @@
 
 package team4384.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -18,6 +20,7 @@ import team4384.robot.constants.CTREConfigs;
 public class Robot extends TimedRobot {
   public static CTREConfigs ctreConfigs;
   private RobotContainer m_robotContainer;
+  private UsbCamera cam = new UsbCamera("cam", 0);
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.

@@ -17,7 +17,7 @@ public final class CTREConfigs {
     public CTREConfigs(){
         swerveAngleFXConfig = new TalonFXConfiguration();
         swerveDriveFXConfig = new com.ctre.phoenix6.configs.TalonFXConfiguration();
-        swerveCanCoderConfig = new CANcoderConfigurator();
+//        swerveCanCoderConfig = new CANcoderConfigurator();
 
         /* Swerve Angle Motor Configurations */
         SupplyCurrentLimitConfiguration angleSupplyLimit = new SupplyCurrentLimitConfiguration(
@@ -29,8 +29,7 @@ public final class CTREConfigs {
         swerveAngleFXConfig.Slot0.kP = SwerveMap.angleKP;
         swerveAngleFXConfig.Slot0.kI = SwerveMap.angleKI;
         swerveAngleFXConfig.Slot0.kD = SwerveMap.angleKD;
-        swerveAngleFXConfig.Slot0.kF = SwerveMap.angleKF;
-        swerveAngleFXConfig.supplyCurrLimit = angleSupplyLimit;
+//        swerveAngleFXConfig.Slot0.kF = SwerveMap.angleKF;
 
         /* Swerve Drive Motor Configuration */
         SupplyCurrentLimitConfiguration driveSupplyLimit = new SupplyCurrentLimitConfiguration(
@@ -47,9 +46,9 @@ public final class CTREConfigs {
 //        swerveDriveFXConfig.closedloopRamp = SwerveMap.closedLoopRamp;
 
         /* Swerve CANCoder Configuration */
-        swerveCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        swerveCanCoderConfig.sensorDirection = SwerveMap.canCoderInvert;
-        swerveCanCoderConfig.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-        swerveCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
+//        swerveCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+//        swerveCanCoderConfig.sensorDirection = SwerveMap.canCoderInvert;
+//        swerveCanCoderConfig.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
+//        swerveCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
     }
 }
