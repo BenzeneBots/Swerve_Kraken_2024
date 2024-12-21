@@ -20,13 +20,17 @@ import team4384.robot.constants.CTREConfigs;
 public class Robot extends TimedRobot {
   public static CTREConfigs ctreConfigs;
   private RobotContainer m_robotContainer;
-  private UsbCamera cam = new UsbCamera("cam", 0);
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
   public void robotInit() {
+    // Camera Video Streaming
+    CameraServer.addCamera(new UsbCamera("USB Cam 0", 0));
+    CameraServer.startAutomaticCapture();
+
     ctreConfigs = new CTREConfigs();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
