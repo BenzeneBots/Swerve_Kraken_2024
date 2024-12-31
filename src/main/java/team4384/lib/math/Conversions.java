@@ -56,7 +56,7 @@ public class Conversions {
      */
     public static double RPMToFalcon(double RPM, double gearRatio) {
         double motorRPM = RPM * gearRatio;
-        double sensorCounts = motorRPM * (2048.0 / 600.0);
+        double sensorCounts = motorRPM * (1/600.0);
         return sensorCounts;
     }
 
@@ -91,7 +91,7 @@ public class Conversions {
      * @return Meters
      */
     public static double falconToMeters(double positionCounts, double circumference, double gearRatio){
-        return positionCounts * (circumference / (gearRatio * 2048.0));
+        return positionCounts * (circumference / (gearRatio));
     }
 
     /**
@@ -101,6 +101,6 @@ public class Conversions {
      * @return Falcon Position Counts
      */
     public static double MetersToFalcon(double meters, double circumference, double gearRatio){
-        return meters / (circumference / (gearRatio * 2048.0));
+        return meters / (circumference / (gearRatio));
     }
 }

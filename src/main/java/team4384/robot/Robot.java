@@ -4,10 +4,12 @@
 
 package team4384.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
+// import edu.wpi.first.cameraserver.CameraServer;
+// import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import team4384.robot.constants.CTREConfigs;
 
@@ -18,8 +20,14 @@ import team4384.robot.constants.CTREConfigs;
  * project.
  */
 public class Robot extends TimedRobot {
+
+  private Command m_autonomousCommand;
+  
   public static CTREConfigs ctreConfigs;
   private RobotContainer m_robotContainer;
+
+  // Magnetic Limit Switch
+  private DigitalInput magnet = new DigitalInput(0);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -28,8 +36,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     // Camera Video Streaming
-    CameraServer.addCamera(new UsbCamera("USB Cam 0", 0));
-    CameraServer.startAutomaticCapture();
+    // CameraServer.addCamera(new UsbCamera("USB Cam 0", 0));
+    // CameraServer.startAutomaticCapture();
 
     ctreConfigs = new CTREConfigs();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
@@ -50,6 +58,7 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
+    SmartDashboard.putBoolean("Magnet", magnet.get());
     CommandScheduler.getInstance().run();
   }
 
@@ -63,15 +72,18 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    // schedule the autonomous command (example)
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
+    }
 //    m_robotContainer.getAutonomousCommand().schedule();
   } //    m_robotContainer.getAutonomousCommand().schedule(); }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    SmartDashboard.putNumber("Rotation", m_robotContainer.s_Swerve.gyro.getRotation2d().getDegrees());
-    SmartDashboard.putNumber("X", m_robotContainer.s_Swerve.getPose().getX());
-    SmartDashboard.putNumber("Y", m_robotContainer.s_Swerve.getPose().getY());
   }
 
   @Override
@@ -80,10 +92,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    SmartDashboard.putNumber("X", m_robotContainer.s_Swerve.getPose().getX());
-    SmartDashboard.putNumber("Rotation", m_robotContainer.s_Swerve.gyro.getRotation2d().getDegrees());
-    SmartDashboard.putNumber("Y", m_robotContainer.s_Swerve.getPose().getY());
-    SmartDashboard.putNumber("Pivot Degrees", m_robotContainer.s_Swerve.gyro.getPitch());
+    
   }
 
   @Override

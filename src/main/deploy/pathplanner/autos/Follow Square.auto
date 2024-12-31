@@ -2,25 +2,19 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7,
-      "y": 4.31
+      "x": 2,
+      "y": 7.0
     },
-    "rotation": 120.0
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "Shooter"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "startLeft"
+            "pathName": "Square"
           }
         }
       ]

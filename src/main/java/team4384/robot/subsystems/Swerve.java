@@ -1,6 +1,7 @@
 package team4384.robot.subsystems;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,7 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.path.PathPoint;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+// import com.pathplanner.lib.path.PathPlannerPath;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
 import team4384.robot.constants.SwerveMap;
 
@@ -62,6 +72,28 @@ public class Swerve extends SubsystemBase {
         resetModulesToAbsolute();
 
         swerveOdometry = new SwerveDriveOdometry(SwerveMap.swerveKinematics, gyro.getRotation2d(), getModulePositions());
+
+        AutoBuilder.configureHolonomic(
+            this::getPose,
+            this::resetOdometry,
+            this::getModuleStates ,
+            this::setModuleStates,
+            new HolonomicPathFollowerConfig(
+                new PIDConstants(1.5, 1.5, 0.025), 
+                new PIDConstants(0.0, 0.0, 0.0), 
+                0.5, 
+                0.5, 
+                new ReplanningConfig()
+            ),
+            () -> {
+                var alliance = DriverStation.getAlliance();
+                if(alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+            },
+            this
+        );
 
         this.CanCoder = new GenericEntry[]{
                 driveTrainTab.add(mSwerveMods[0].moduleName + mSwerveMods[0].moduleNumber + " Cancoder", mSwerveMods[0].getCanCoder().getDegrees()).getEntry(),
@@ -110,11 +142,13 @@ public class Swerve extends SubsystemBase {
     }
 
     /* Used by SwerveControllerCommand in Auto */
-    public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveMap.maxSpeed);
+    public void setModuleStates(ChassisSpeeds chassisSpeeds) {
+        SwerveModuleState[] swerveModuleStates =
+            SwerveMap.swerveKinematics.toSwerveModuleStates(chassisSpeeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveMap.maxSpeed);
         
         for(SwerveModule mod : mSwerveMods){
-            mod.setDesiredState(desiredStates[mod.moduleNumber], false);
+            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], true);
         }
     }    
 
@@ -158,6 +192,42 @@ public class Swerve extends SubsystemBase {
     }
 
     
+     //Generate a runnable trajectory from the current robot pose to the desired pose as determined by the LimeLight.
+     //ToDo - Incomplete. Don't Use
+    public PathPlannerTrajectory generateTrajectoryToPose(Pose2d desiredPose2D, Pose2d robotPose2D) {
+
+        PathPlannerTrajectory desiredPoseTraj = null;
+
+        //ToDo - If Robot Pose and desired pose is equal, then not need of a trajectory
+         // Add our path points--start at the current robot pose and end at the desired
+        // pose.
+        List<PathPoint> points = new ArrayList<PathPoint>();
+
+        points.add(new PathPoint(robotPose2D.getTranslation()));
+        points.add(new PathPoint(desiredPose2D.getTranslation()));
+
+        // PathPlanner has a built in path generation function!
+        //PathPlannerTrajectory traj = PathPlannerPath.generatePath(constraints, points);
+
+        return desiredPoseTraj;
+    }
+
+
+    public Command goToDesiredPose(Pose2d desiredPose2D) {
+
+        // Create the constraints to use while pathfinding
+        // ToDo Move this to Utilitiy. This constraint can be reused or should align with drive strategy
+        PathConstraints kPathConstraints = new PathConstraints(3.0, 
+                                                               4.0,
+                                                               Units.degreesToRadians(540), 
+                                                               Units.degreesToRadians(720));
+
+         return AutoBuilder.pathfindToPose(desiredPose2D, 
+                                           kPathConstraints, 
+                                           0.0, 
+                                           1);
+
+    }
     @Override
     public void periodic(){
         swerveOdometry.update(getYaw(), getModulePositions());
@@ -170,6 +240,7 @@ public class Swerve extends SubsystemBase {
             Velocity[i].setDouble(mod.getState().speedMetersPerSecond);
         }
 
-        SmartDashboard.putNumber("Gyro", gyro.getRotation2d().getDegrees());
+        SmartDashboard.putNumber("X", swerveOdometry.getPoseMeters().getX());
+        SmartDashboard.putNumber("Y", swerveOdometry.getPoseMeters().getY());
     }
 }

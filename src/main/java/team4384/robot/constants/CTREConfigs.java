@@ -1,23 +1,25 @@
 package team4384.robot.constants;
 
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.CANcoderConfigurator;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 
 public final class CTREConfigs {
-    public com.ctre.phoenix6.configs.TalonFXConfiguration swerveAngleFXConfig;
+    public TalonFXConfiguration swerveAngleFXConfig;
     public com.ctre.phoenix6.configs.TalonFXConfiguration swerveDriveFXConfig;
-    public com.ctre.phoenix6.configs.CANcoderConfigurator swerveCanCoderConfig;
+    public CANCoderConfiguration swerveCanCoderConfig;
 
     public CTREConfigs(){
         swerveAngleFXConfig = new TalonFXConfiguration();
         swerveDriveFXConfig = new com.ctre.phoenix6.configs.TalonFXConfiguration();
-//        swerveCanCoderConfig = new CANcoderConfigurator();
+        swerveCanCoderConfig = new CANCoderConfiguration();
 
         /* Swerve Angle Motor Configurations */
         SupplyCurrentLimitConfiguration angleSupplyLimit = new SupplyCurrentLimitConfiguration(
@@ -26,10 +28,11 @@ public final class CTREConfigs {
             SwerveMap.anglePeakCurrentLimit, 
             SwerveMap.anglePeakCurrentDuration);
 
-        swerveAngleFXConfig.Slot0.kP = SwerveMap.angleKP;
-        swerveAngleFXConfig.Slot0.kI = SwerveMap.angleKI;
-        swerveAngleFXConfig.Slot0.kD = SwerveMap.angleKD;
-//        swerveAngleFXConfig.Slot0.kF = SwerveMap.angleKF;
+        swerveAngleFXConfig.slot0.kP = SwerveMap.angleKP;
+        swerveAngleFXConfig.slot0.kI = SwerveMap.angleKI;
+        swerveAngleFXConfig.slot0.kD = SwerveMap.angleKD;
+        swerveAngleFXConfig.slot0.kF = SwerveMap.angleKF;
+        swerveAngleFXConfig.supplyCurrLimit = angleSupplyLimit;
 
         /* Swerve Drive Motor Configuration */
         SupplyCurrentLimitConfiguration driveSupplyLimit = new SupplyCurrentLimitConfiguration(
@@ -41,14 +44,22 @@ public final class CTREConfigs {
         swerveDriveFXConfig.Slot0.kP = SwerveMap.driveKP;
         swerveDriveFXConfig.Slot0.kI = SwerveMap.driveKI;
         swerveDriveFXConfig.Slot0.kD = SwerveMap.driveKD;
-//        swerveDriveFXConfig.slot0.kF = SwerveMap.driveKF;
-//        swerveDriveFXConfig.openloopRamp = SwerveMap.openLoopRamp;
-//        swerveDriveFXConfig.closedloopRamp = SwerveMap.closedLoopRamp;
+        // swerveDriveFXConfig.Slot0.kF = SwerveMap.driveKF;
+        CurrentLimitsConfigs con = new CurrentLimitsConfigs();
+        con.StatorCurrentLimit = SwerveMap.drivePeakCurrentLimit;
+        con.StatorCurrentLimitEnable = SwerveMap.driveEnableCurrentLimit;
+        con.SupplyTimeThreshold = SwerveMap.drivePeakCurrentDuration;
+        swerveDriveFXConfig.CurrentLimits = con;
+
+        // OpenLoopRampsConfigs openConfig = new OpenLoopRampsConfigs();
+        // ClosedLoopRampsConfigs closedConfig = new ClosedLoopRampsConfigs();
+        // swerveDriveFXConfig.OpenLoopRamps = SwerveMap.openLoopRamp;
+        // swerveDriveFXConfig.ClosedLoopRamps = SwerveMap.closedLoopRamp;
 
         /* Swerve CANCoder Configuration */
-//        swerveCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-//        swerveCanCoderConfig.sensorDirection = SwerveMap.canCoderInvert;
-//        swerveCanCoderConfig.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-//        swerveCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
+        swerveCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+        swerveCanCoderConfig.sensorDirection = SwerveMap.canCoderInvert;
+        swerveCanCoderConfig.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
+        swerveCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
     }
 }

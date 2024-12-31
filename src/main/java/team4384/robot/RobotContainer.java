@@ -1,5 +1,8 @@
 package team4384.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.wpilibj.*;
 
 
@@ -62,6 +65,10 @@ public class RobotContainer {
             )
         );
 
+        autoChooser = AutoBuilder.buildAutoChooser();
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+
     }
 
     /**
@@ -84,24 +91,8 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-//    public Command getAutonomousCommand() {
-//        return new Command() {
-//            private Timer timer = new Timer();
-//            @Override
-//            public void initialize(){
-//                timer.start();
-//            }
-//            @Override
-//            public void execute() {
-//                if(timer.get() >1){
-//                    mShooter.index();
-//                }
-//                mShooter.shoot();
-//            }
-//        };
-//    }
-
-  
-  // ToDo - Disable this function during competition. Required only for development and testing purpose.
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
+    }
 
 }
